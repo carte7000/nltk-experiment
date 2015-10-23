@@ -2,12 +2,17 @@
 
 import nltk
 import unittest
+from nltk.stem.porter import PorterStemmer
 
 def tokenize(sentence):
 	return nltk.word_tokenize(sentence)
 	
 def pos(array):
     return nltk.pos_tag(array)
+    
+def stem(sentence):
+    st = PorterStemmer()
+    return st.stem(sentence)
 
 class TestTokenize(unittest.TestCase):
   def test_tokens(self):
@@ -20,7 +25,12 @@ class TestPos(unittest.TestCase):
         sentence = """At eight o'clock on Thursday morning Arthur didn't feel very good."""
         pos_tokens = pos(tokenize(sentence))
         self.assertTrue(True)
+        
+class TestStem(unittest.TestCase):
+    def test_do_stem_run(self):
+        sentence = """At eight o'clock on Thursday morning Arthur didn't feel very good."""
+        stem_result = stem(sentence)
+        self.assertTrue(True)
 
 print("Running Tests")
-
 unittest.main()
