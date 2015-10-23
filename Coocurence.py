@@ -2,6 +2,7 @@
 
 import nltk
 import unittest
+import math
 from nltk.stem.porter import PorterStemmer
 
 def tokenize(sentence):
@@ -71,7 +72,18 @@ def extractPos(tagged_array):
         result.append(tag[1])
         
     return result
-
+    
+def tTest(wordCountDict, pairCountDict, numberOfWords):
+    numberOfPairs = numberOfWords-1
+    coocurences = dict()
+    for key, value in pairCountDict.iteritems():
+        pPair = float(value)/numberOfPairs
+        pMu = (wordCountDict[list(key)[0]]/numberOfWords)*(wordCountDict[list(key)[1]]/numberOfWords)
+        tTest = (pPair-pMu)/(math.sqrt(pPair/numberOfPairs))
+        coocurences[key]=tTest
+    
+    return coocurences
+    
 class TestTokenize(unittest.TestCase):
   def test_tokens(self):
   	sentence = """At eight o'clock on Thursday morning Arthur didn't feel very good."""
@@ -111,9 +123,16 @@ class TestFilter(unittest.TestCase):
     def test_do_filter_pair_work(self):
         filter_result = filter_tag(tokenize("they refuse to"), [["PRP","VBP"]])
         #filter_result = filter_tag(count_pair([["they","refuse"],["refuse","to"]]), [["PRP","VBP"]])
-        print(filter_result)
         self.assertTrue(tuple(["they","refuse"]) in filter_result)
         self.assertFalse(tuple(["refuse","to"]) in filter_result)
+        
+class TesttTest(unittest.TestCase):
+    def test_do_tTest_run(self):
+        test = tokenize("they refuse to")
+        wordCountDict = count_word(test)
+        pair = take_all_pair_array(test, 1)
+        pairCountDict = count_pair(pair)
+        tTest(wordCountDict, pairCountDict, 3)
 
 print("Running Tests")
 unittest.main()
