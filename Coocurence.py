@@ -3,10 +3,12 @@
 import nltk
 import unittest
 import math
+import codecs
 from nltk.stem.porter import PorterStemmer
 
 def tokenize(sentence):
-	return nltk.word_tokenize(sentence)
+    se = sentence#.encode("UTF-8")
+    return nltk.word_tokenize(se)
 	
 def pos(array):
     return nltk.pos_tag(array)
@@ -84,6 +86,18 @@ def tTest(wordCountDict, pairCountDict, numberOfWords):
     
     return coocurences
     
+def MI(wordCountDict, pairCountDict, numberOfWords):
+    numberOfPairs = numberOfWords-1
+    coocurences = dict()
+    for key, value in pairCountDict.iteritems():
+        pPair = float(value)/numberOfPairs
+        pMu = (wordCountDict[list(key)[0]]/numberOfWords)*(wordCountDict[list(key)[1]]/numberOfWords)
+        mi = math.log(pPair/pMu)
+        coocurences[key]=mi
+        
+    return coocurences
+    
+    
 class TestTokenize(unittest.TestCase):
   def test_tokens(self):
   	sentence = """At eight o'clock on Thursday morning Arthur didn't feel very good."""
@@ -134,5 +148,14 @@ class TesttTest(unittest.TestCase):
         pairCountDict = count_pair(pair)
         tTest(wordCountDict, pairCountDict, 3)
 
-print("Running Tests")
-unittest.main()
+#print("Running Tests")
+#unittest.main()
+
+file = codecs.open('file_collection_cc_punct_line.txt', 'r', encoding='utf-8')
+
+test = tokenize(file.read())
+
+wordCountDict = count_word(test)
+pairCountDict = count_pair(take_all_pair(test,1))
+
+tTest(wordCountDict, pairCountDict, len(test))
